@@ -61,19 +61,21 @@ class LineSensor_c {
       delayMicroseconds(10);
       _centre_ls.setRead();
 
-      unsigned long start_time = micros();
+      unsigned long start_time;
+      unsigned long end_time;
+      unsigned long elapsed_time;
+       
+      start_time = micros();
       while (_centre_ls.state() == HIGH) {}
-      unsigned long end_time = micros();
+      end_time = micros();
 
       // Calculate elapsed time
-      unsigned long elapsed_time = end_time - start_time;
+      elapsed_time = end_time - start_time;
 
       // Print output.
       Serial.print("Centre line sensor: " );
       Serial.print( elapsed_time );
       Serial.print("\n");
-
-      delay(100);
     }
 };
 

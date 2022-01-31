@@ -15,7 +15,7 @@ void setup() {
 
   Serial.begin(9600);
   delay(1000);
-  Serial.println("***RESET***");
+  // Serial.println("***RESET***");
 
   // Set LED pin as an output
   pinMode( LED_PIN, OUTPUT );
@@ -27,7 +27,7 @@ void setup() {
 
 // put your main code here, to run repeatedly:
 void loop() {
-
+  line_sensors.updateValues();
   motors.forward();
 
   // Using an if statement to toggle a variable
@@ -41,7 +41,5 @@ void loop() {
   // We use the variable to set the
   // debug led on or off on the 3Pi+
   digitalWrite( LED_PIN, led_state );
-
-  Serial.println("loop");
   delay(500);
 }
