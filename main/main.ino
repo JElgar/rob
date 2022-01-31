@@ -22,13 +22,37 @@ void setup() {
 
   // Set initial state of the LED
   led_state = false;
+
+  // Setup line sensors
+  line_sensors.initialise();
 }
 
 
 // put your main code here, to run repeatedly:
 void loop() {
   line_sensors.updateValues();
-  motors.forward();
+  Serial.print("Centre online: ");
+  Serial.print(line_sensors._centre_ls.isOnLine());
+  Serial.print(" and value is ");
+  Serial.println(line_sensors._centre_ls._value);
+
+  Serial.print("Left online: ");
+  Serial.print(line_sensors._left_ls.isOnLine());
+  Serial.print("");
+  Serial.print(" and value is ");
+  Serial.println(line_sensors._left_ls._value);
+
+  Serial.print("Right online: ");
+  Serial.print(line_sensors._right_ls.isOnLine());
+  Serial.print("");
+  Serial.print(" and value is ");
+  Serial.println(line_sensors._right_ls._value);
+
+  if (line_sensors._centre_ls.isOnLine()) {
+    motors.stop();
+  } else {
+    motors.forward();
+  }
 
   // Using an if statement to toggle a variable
   // with each call of loop()

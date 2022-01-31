@@ -9,8 +9,18 @@
 #define LS_RIGHT_PIN A3
 #define LS_IR_PIN 11
 
+#define LINE_THRESHOLD 1500 // Sensor time to be deemed as on line
+#define TIMEOUT_THRESHOLD 5000 // Max time update can take
+
+enum SensorState {
+  UPDATED,
+  UPDATING,
+};
+
 class LineSensor {
   public:
+    SensorState state = UPDATED;
+  
     LineSensor(int pin) {
       _pin = pin;
     }
@@ -24,22 +34,45 @@ class LineSensor {
     void setRead() {
       pinMode(_pin, INPUT);
     }
-    uint8_t state() {
+    uint8_t pinState() {
       return digitalRead(_pin);
     }
+    bool isOnLine() {
+      return _value > LINE_THRESHOLD;
+    }
+
+    // During an update, check the sensor value. If it is low the capacitor has fully 
+    // discharged so the update is completed. Save the time of discharge as the value 
+    // and mark the sensor as updated.
+    void checkUpdate(unsigned long start_time) {
+      if (state != UPDATING) return;
+
+      // Calculate elapsed time
+      unsigned long current_time = micros();
+      unsigned long elapsed_time = current_time - start_time;
+ 
+      // If the capacitor has finished discharging
+      if(pinState() == LOW or elapsed_time > TIMEOUT_THRESHOLD) {
+        _value = elapsed_time;
+
+        // Set sensor to updated
+        state = UPDATED;
+      }
+    }
+    unsigned long _value;
   private:
     int _pin;
-    int _value;
+    
 };
 
 // Class to operate the linesensor(s).
 class LineSensor_c {
   private:
+
+  public:
     LineSensor _left_ls = LineSensor(LS_LEFT_PIN);
     LineSensor _centre_ls = LineSensor(LS_CENTRE_PIN);
     LineSensor _right_ls = LineSensor(LS_RIGHT_PIN);
-  public:
-    // Constructor, must exist.
     LineSensor_c() {}
 
     void initialise() {
@@ -54,28 +87,34 @@ class LineSensor_c {
     }
 
     void updateValues() {
-      unsigned long current_time;
+      // Mark the sensors as updating
+      _centre_ls.state = UPDATING;
+      _right_ls.state = UPDATING;
+      _left_ls.state = UPDATING;
 
       // Charge capacitor by turning on IR emitter
       _centre_ls.setEmit();
+      _right_ls.setEmit();
+      _left_ls.setEmit();
       delayMicroseconds(10);
+
+      // Stop charging
       _centre_ls.setRead();
-
-      unsigned long start_time;
-      unsigned long end_time;
-      unsigned long elapsed_time;
+      _right_ls.setRead();
+      _left_ls.setRead();
        
-      start_time = micros();
-      while (_centre_ls.state() == HIGH) {}
-      end_time = micros();
+      unsigned long start_time = micros();
 
-      // Calculate elapsed time
-      elapsed_time = end_time - start_time;
-
-      // Print output.
-      Serial.print("Centre line sensor: " );
-      Serial.print( elapsed_time );
-      Serial.print("\n");
+      // Wait till all sensors have finished updating
+      while (
+        _centre_ls.state == UPDATING or
+        _right_ls.state == UPDATING or
+        _left_ls.state == UPDATING
+      ) {
+        _centre_ls.checkUpdate(start_time);
+        _right_ls.checkUpdate(start_time);
+        _left_ls.checkUpdate(start_time); 
+      }
     }
 };
 

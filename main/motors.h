@@ -51,8 +51,13 @@ class Motors_c {
     }
     
     void forward() {
-        setLeftMotorPower(20);
-        setRightMotorPower(20);
+      setLeftMotorPower(20);
+      setRightMotorPower(20);
+    }
+
+    void stop() {
+      setLeftMotorPower(0);
+      setRightMotorPower(0);
     }
 
     void setLeftMotorPower(float pwm) {
