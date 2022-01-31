@@ -30,23 +30,9 @@ void setup() {
 
 // put your main code here, to run repeatedly:
 void loop() {
-  line_sensors.updateValues();
-  Serial.print("Centre online: ");
-  Serial.print(line_sensors._centre_ls.isOnLine());
-  Serial.print(" and value is ");
-  Serial.println(line_sensors._centre_ls._value);
-
-  Serial.print("Left online: ");
-  Serial.print(line_sensors._left_ls.isOnLine());
-  Serial.print("");
-  Serial.print(" and value is ");
-  Serial.println(line_sensors._left_ls._value);
-
-  Serial.print("Right online: ");
-  Serial.print(line_sensors._right_ls.isOnLine());
-  Serial.print("");
-  Serial.print(" and value is ");
-  Serial.println(line_sensors._right_ls._value);
+  unsigned long current_time = millis();
+  
+  line_sensors.update(current_time);
 
   if (line_sensors._centre_ls.isOnLine()) {
     motors.stop();

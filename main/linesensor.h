@@ -12,6 +12,8 @@
 #define LINE_THRESHOLD 1500 // Sensor time to be deemed as on line
 #define TIMEOUT_THRESHOLD 5000 // Max time update can take
 
+bool LOG = true;
+
 enum SensorState {
   UPDATED,
   UPDATING,
@@ -21,8 +23,9 @@ class LineSensor {
   public:
     SensorState state = UPDATED;
   
-    LineSensor(int pin) {
+    LineSensor(int pin, String sensor_name) {
       _pin = pin;
+      _name = sensor_name;
     }
     void initialise() {
       pinMode(_pin, INPUT);
@@ -57,10 +60,18 @@ class LineSensor {
 
         // Set sensor to updated
         state = UPDATED;
+
+        if (LOG) {
+          Serial.print("Sensor " + _name + " updated: ");
+          Serial.print(isOnLine());
+          Serial.print(" and value is ");
+          Serial.println(_value);
+        }
       }
     }
     unsigned long _value;
   private:
+    String _name;
     int _pin;
     
 };
@@ -68,11 +79,13 @@ class LineSensor {
 // Class to operate the linesensor(s).
 class LineSensor_c {
   private:
+    unsigned long _update_interval = 1000;
+    unsigned long _last_update = 0;
 
   public:
-    LineSensor _left_ls = LineSensor(LS_LEFT_PIN);
-    LineSensor _centre_ls = LineSensor(LS_CENTRE_PIN);
-    LineSensor _right_ls = LineSensor(LS_RIGHT_PIN);
+    LineSensor _left_ls = LineSensor(LS_LEFT_PIN, "left");
+    LineSensor _centre_ls = LineSensor(LS_CENTRE_PIN, "centre");
+    LineSensor _right_ls = LineSensor(LS_RIGHT_PIN, "right");
     LineSensor_c() {}
 
     void initialise() {
@@ -86,7 +99,11 @@ class LineSensor_c {
       digitalWrite(LS_IR_PIN, HIGH);
     }
 
-    void updateValues() {
+    void update(unsigned long current_time) {
+      if (current_time - _last_update < _update_interval) {
+        return;
+      } 
+      
       // Mark the sensors as updating
       _centre_ls.state = UPDATING;
       _right_ls.state = UPDATING;
@@ -115,6 +132,8 @@ class LineSensor_c {
         _right_ls.checkUpdate(start_time);
         _left_ls.checkUpdate(start_time); 
       }
+
+      _last_update = millis();
     }
 };
 
