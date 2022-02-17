@@ -9,6 +9,8 @@
 # define R_PWM_PIN 9
 # define R_DIR_PIN 15
 
+# define BASE_SPEED 20
+
 class Motor {
   public:
     Motor(int pwm_pin, int dir_pin) {
@@ -19,7 +21,7 @@ class Motor {
       pinMode(_pwm_pin, OUTPUT);
       pinMode(_dir_pin, OUTPUT);
     }
-    void setPower(float pwm) {
+    void setPower(double pwm) {
       // Set motor direction
       if (pwm > 0) {
         digitalWrite(_dir_pin, LOW);
@@ -38,34 +40,27 @@ class Motor {
 // Class to operate the motor(s).
 class Motors_c {
   private:
-    Motor _right_motor = Motor(R_PWM_PIN, R_DIR_PIN);
-    Motor _left_motor = Motor(L_PWM_PIN, L_DIR_PIN);
+    Motor right = Motor(R_PWM_PIN, R_DIR_PIN);
+    Motor left = Motor(L_PWM_PIN, L_DIR_PIN);
   public:
     // Constructor, must exist.
     Motors_c() {} 
 
     void initialise() {
       // Set all the motor pins as outputs.
-      _left_motor.initialise();
-      _right_motor.initialise();
+      left.initialise();
+      right.initialise();
     }
     
-    void forward() {
-      setLeftMotorPower(20);
-      setRightMotorPower(20);
+    void update(double error) {
+      error = error * 2;
+      left.setPower(BASE_SPEED - BASE_SPEED * max(error, 0));
+      right.setPower(BASE_SPEED + BASE_SPEED * min(error, 0));
     }
 
     void stop() {
-      setLeftMotorPower(0);
-      setRightMotorPower(0);
-    }
-
-    void setLeftMotorPower(float pwm) {
-      _right_motor.setPower(pwm);
-    }
-    
-    void setRightMotorPower(float pwm) {
-      _left_motor.setPower(pwm);
+      left.setPower(0);
+      right.setPower(0);
     }
 };
 
