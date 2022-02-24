@@ -22,6 +22,7 @@ class Motor {
       pinMode(_dir_pin, OUTPUT);
     }
     void setPower(double pwm) {
+
       // Set motor direction
       if (pwm > 0) {
         digitalWrite(_dir_pin, LOW);
@@ -29,7 +30,7 @@ class Motor {
         digitalWrite(_dir_pin, HIGH);
       }
       // Set motor speed
-      analogWrite(_pwm_pin, abs(pwm));
+      analogWrite(_pwm_pin, min(abs(pwm), 30));
     }
 
   private:

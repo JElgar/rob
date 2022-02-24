@@ -4,7 +4,7 @@
 #include "pid.h"
 
 Motors_c motors = Motors_c();
-LineSensor_c line_sensors = LineSensor_c(100);
+LineSensor_c lineSensors = LineSensor_c(100);
 
 // put your setup code here, to run once:
 void setup() {
@@ -19,7 +19,7 @@ void setup() {
   pinMode(17, INPUT);
   
   // Setup line sensors
-  line_sensors.initialise();
+  lineSensors.initialise();
   motors.initialise();
 }
 
@@ -37,9 +37,20 @@ void setup() {
 
 // put your main code here, to run repeatedly:
 void loop() {
-  unsigned long current_time = millis();
+  unsigned long currentTime = millis();
 
-  line_sensors.update(current_time);
-  motors.update(line_sensors.error);
+  lineSensors.update(currentTime);
 
+  if (lineSensors.state == READY) {
+    if (currentTime % 1000 == 0) {
+      Serial.println("Updating motors ");
+      Serial.print("Left value: ");
+      Serial.println(lineSensors.left.value);
+      Serial.print("Right value: ");
+      Serial.println(lineSensors.right.value);
+      Serial.println(lineSensors.error, 10);
+    }
+
+    motors.update(lineSensors.error);
+  }
 }
