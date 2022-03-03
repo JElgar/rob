@@ -43,13 +43,23 @@ ISR( INT6_vect ) {
     // Handle which transition we have registered.
     // Complete this if statement as necessary.
     // Refer to the labsheet. 
-    if( state_e0 == 0 ) {
-
-    } else if( state_e0 == 1 ) {
-
+    if( state_e0 == 1 ) {
+      count_e0 = count_e0 + 1;  // forwards
     } else if( state_e0 == 2 ) {
-
-    } // Continue this if statement as necessary.
+      count_e0 = count_e0 -1;   // backwards
+    } else if( state_e0 == 4 ) {
+      count_e0 = count_e0 -1;   // backwards
+    } else if( state_e0 == 7 ) {
+      count_e0 = count_e0 +1;   // backwards
+    } else if( state_e0 == 8 ) {
+      count_e0 = count_e0 +1;   // backwards
+    } else if( state_e0 == 11 ) {
+      count_e0 = count_e0 -1;   // backwards
+    } else if( state_e0 == 13 ) {
+      count_e0 = count_e0 -1;   // backwards
+    } else if( state_e0 == 14 ) {
+      count_e0 = count_e0 +1;   // backwards
+    }
 
     // Shift the current readings (bits 3 and 2) down
     // into position 1 and 0 (to become prior readings)
@@ -98,13 +108,23 @@ ISR( PCINT0_vect ) {
     // Handle which transition we have registered.
     // Complete this if statement as necessary.
     // Refer to the labsheet. 
-    if( state_e1 == 0 ) {
-
-    } else if( state_e1 == 1 ) {
-
+    if( state_e1 == 1 ) {
+      count_e1 = count_e1 + 1;  // forwards
     } else if( state_e1 == 2 ) {
-
-    } // Continue this if statement as necessary.
+      count_e1 = count_e1 -1;   // backwards
+    } else if( state_e1 == 4 ) {
+      count_e1 = count_e1 -1;   // backwards
+    } else if( state_e1 == 7 ) {
+      count_e1 = count_e1 +1;   // backwards
+    } else if( state_e1 == 8 ) {
+      count_e1 = count_e1 +1;   // backwards
+    } else if( state_e1 == 11 ) {
+      count_e1 = count_e1 -1;   // backwards
+    } else if( state_e1 == 13 ) {
+      count_e1 = count_e1 -1;   // backwards
+    } else if( state_e1 == 14 ) {
+      count_e1 = count_e1 +1;   // backwards
+    }
 
     // Shift the current readings (bits 3 and 2) down
     // into position 1 and 0 (to become prior readings)

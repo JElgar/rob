@@ -59,6 +59,16 @@ class Motors_c {
       right.setPower(BASE_SPEED + BASE_SPEED * min(error, 0));
     }
 
+    void forward() {
+      left.setPower(20);
+      right.setPower(20);
+    }
+
+    void backward() {
+      left.setPower(-20);
+      right.setPower(-20);
+    }
+
     void stop() {
       left.setPower(0);
       right.setPower(0);
