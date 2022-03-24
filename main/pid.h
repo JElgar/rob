@@ -6,12 +6,19 @@
 
 // Class to contain generic PID algorithm.
 class PID_c {
-  public:
-  
-    // Constructor, must exist.
-    PID_c() {
+  private:
+    long last_count_e0 = 0;
+    long last_count_e1 = 0;
 
-    } 
+    unsigned long last_update = 0;
+    
+  public:
+    double velocity;
+    
+    // Constructor, must exist.
+    PID_c() {} 
+
+  
 
 };
 

@@ -6,6 +6,7 @@
 
 Motors_c motors = Motors_c();
 LineSensor_c lineSensors = LineSensor_c(100);
+Kinematics_c kinematics = Kinematics_c(100);
 
 // put your setup code here, to run once:
 void setup() {
@@ -32,7 +33,15 @@ void setup() {
 void loop() {
   unsigned long currentTime = millis();
 
+  kinematics.update(currentTime);
   lineSensors.update(currentTime);
+
+  Serial.print("x: ");
+  Serial.print(kinematics.x);
+  Serial.print(", y: ");
+  Serial.print(kinematics.y);
+  Serial.print(", r: ");
+  Serial.println(kinematics.r);
 
   if (lineSensors.state == READY) {
     motors.update(lineSensors.error);
