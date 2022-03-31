@@ -4,9 +4,11 @@
 #include "pid.h"
 #include "encoders.h"
 
-Motors_c motors = Motors_c();
+Motors_c motors = Motors_c(50);
 LineSensor_c lineSensors = LineSensor_c(100);
 Kinematics_c kinematics = Kinematics_c(100);
+PID_c pid_left = PID_c(100, 20);
+PID_c pid_right = PID_c(100, 20);
 
 // put your setup code here, to run once:
 void setup() {
@@ -36,14 +38,19 @@ void loop() {
   kinematics.update(currentTime);
   lineSensors.update(currentTime);
 
-  Serial.print("x: ");
-  Serial.print(kinematics.x);
-  Serial.print(", y: ");
-  Serial.print(kinematics.y);
-  Serial.print(", r: ");
-  Serial.println(kinematics.r);
-
   if (lineSensors.state == READY) {
-    motors.update(lineSensors.error);
+    pid_left.update(currentTime, 0.5, motors.left.velocity_est);
+    pid_right.update(currentTime, 0.5, motors.right.velocity_est);
+    //Serial.println("VALS");
+    //Serial.println(motors.left.velocity_est, 10);
+    Serial.println(motors.right.velocity_est, 10);
+    Serial.println(pid_right.feedback_signal, 10);
+    //Serial.println(pid_left.feedback_signal, 10);
+    //Serial.println(pid_left.i_term, 10);
+    
+    //motors.update(lineSensors.error);
+    motors.left.setPower(pid_left.feedback_signal);
+    motors.right.setPower(pid_right.feedback_signal);
+    motors.updateVelocityEstimates(currentTime, count_e0, count_e1);
   }
 }
